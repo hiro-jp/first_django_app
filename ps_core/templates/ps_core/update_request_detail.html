@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% load ps_extras %}
+
+{% block title %}Approve{% endblock title %}
+
+{% block content %}
+
+
+<form method="post" action="{% url "ps_core:update_request_detail" pk=object.id %}">
+{% csrf_token %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12 p-3">
+            <div class="row px-3">
+                <div class="col-6 p-1">
+                    <div class="col-12">
+                    スキル：<p class="text-center bg-light rounded" style="font-size: 1.5rem">{{ skill_master.skill.name }}</p>
+                    </div>
+                </div>
+
+                <div class="col-6 px-1">
+                    <div class="col-12">
+                    説明：<p class="p-1 bg-light rounded" style="text-indent:1em;">{{ skill_master.skill.description }}</p>
+                    </div>
+                </div>
+
+                <div class="col-6 p-1">
+                    <div class="col-12">
+                    現在レベル：<p class="text-center bg-light rounded" style="font-size: 1.5rem">{{ skill_master.rank.name }}</p>
+                    </div>
+                </div>
+
+                <div class="col-6 px-1">
+                    <div class="col-12">
+                    申請レベル：<p class="text-center bg-light rounded" style="font-size: 1.5rem">{{ update_request.rank_req }}</p>
+                    </div>
+                </div>
+
+                <div class="col-12 px-1 pb-3">
+                    <div class="col-12">
+                    理由：<div class="bg-light rounded">{{ update_request.reason }}</div>
+                    </div>
+                </div>
+
+                <div class="col-12 px-1">
+                    <div class="col-12">
+                    コメント：<div class="bg-light rounded">{{ form.comment }}</div>
+                    </div>
+                </div>
+
+                <div class="col-6 py-4 px-0">
+                    <div class="col-12">
+                    <p class="text-center bg-light rounded" style="font-size: 1.5rem">判定：{{ form.status }}</p>
+                    </div>
+                </div>
+
+                <div class="col-6 py-4 px-0">
+                    <div class="col-12">
+                    <button type="submit" class="btn btn-primary btn-block" value="submit">確認</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+{% if update_request_list %}
+<hr>
+<h4>過去の申請</h4>
+{% endif %}
+
+{% for ur in update_request_list %}
+    <div class="card mb-5">
+        <table class="table mb-0 bg-light">
+            <tr>
+                <td width="15%"><strong>申請内容</strong></td>
+                <td colspan="3">{{ ur.rank_cur }}：{{ ur.rank_cur.description }} → {{ ur.rank_req }}：{{ ur.rank_req.description }}</td>
+            </tr>
+            <tr>
+                <td width="15%"><strong>申請理由</strong></td>
+                <td colspan="3">{{ ur.reason }}</td>
+            </tr>
+            <tr>
+                <td width="15%"><strong>承認コメント</strong></td>
+                <td colspan="3">{{ ur.comment }}</td>
+            </tr>
+            <tr>
+                <td width="15%"><strong>承認状況</strong></td>
+                <td width="50%">{{ ur.status }}（{{ ur.date_app }}）</td>
+                <td width="15%"><strong>承認者</strong></td>
+                <td width="20%">{{ ur.approver.username }}</td>
+            </tr>
+        </table>
+    </div>
+{% endfor %}
+
+
+{% endblock content %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<form action="" method="POST">
+    <div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card my-3">
+            <div class="card-header text-center">
+                <img class="mx-auto d-block" src="{% static 'ps_core/ps_logo_opaque.png' %}">
+                <h4>Profiling sheet profiles you.</h4>
+            </div>
+            <div class="card-body">
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                    {{ field.label }}
+                    {{ field }}
+                    {{ field.errors }}
+                    <hr>
+                {% endfor %}
+                <section class="common-form">
+                {% if form.errors %}
+                    <p class="error-msg">Your username and password didn't match. Please try again.</p>
+                {% endif %}
+                {% if next %}
+                    {% if user.is_authenticated %}
+                        <p class="error-msg">Your account doesn't have access to this page. To proceed,
+                        please login with an account that has access.</p>
+                    {% else %}
+                        <p class="error-msg">Please login to see this page.</p>
+                    {% endif %}
+                {% endif %}
+                </section>
+                <button type="submit" class="btn btn-success btn-lg btn-block" >Login</button>
+                <input type="hidden" name="next" value="{{ next }}" />
+                {% csrf_token %}
+            </div>
+        </div>
+    </div>
+    </div>
+</form>
+
+{% endblock %}

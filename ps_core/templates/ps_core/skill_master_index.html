@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% load ps_extras %}
+
+{% block title %}Home{% endblock title %}
+
+{% block content %}
+
+{% if perms.ps_core.can_create %}
+    {% for sm in skillmaster_list %}
+        <div class="row">
+            <div class="col-md-10 offset-md-1">
+                <div class="card my-2">
+                <h5 class="card-header">
+                    <div class="card-title mb-0">{{ sm.skill.name }}</div>
+                </h5>
+                <div class="card-body p-0">
+                <table class="table mb-0 text-center">
+                    <thead>
+                        <tr>
+                            <th>あなたのレベル</th>
+                            <th>参考レベル</th>
+                            <th>最終承認日</th>
+                            <th>レベルアップ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="align-middle"><strong style="font-size: 1.3rem">{{ sm.rank.name }}</strong></td>
+                            <td class="align-middle">{{ sm.skill.referencerank_set|ref_rank_filter:yoe }}</td>
+                            <td class="align-middle">2019/7/1</td>
+                            <td><a href="{% url 'ps_core:skill_master_detail' pk=sm.id %}" class="btn btn-primary">申請</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
+
+
+{% if perms.ps_core.can_approve %}
+    {% for ur in update_request_list %}
+        <div class="row">
+            <div class="col-md-10 offset-md-1">
+                <div class="card my-2">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{{ ur.skill_master.user.username }}さんの申請</h5>
+                </div>
+                <div class="card-body p-0">
+                <table class="table mb-0 text-center">
+                    <thead>
+                        <tr>
+                            <th>申請日</th>
+                            <th>スキル</th>
+                            <th>現ランク</th>
+                            <th></th>
+                            <th>申請ランク</th>
+                            <th>ステータス</th>
+                            <th>承認</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="align-middle">{{ ur.date_req }}</td>
+                            <td class="align-middle">{{ ur.skill_master.skill.name }}</td>
+                            <td class="align-middle">{{ ur.rank_cur }}</td>
+                            <td class="align-middle">→</td>
+                            <td class="align-middle"><strong style="font-size: 1.3rem">{{ ur.rank_req }}</strong></td>
+                            <td class="align-middle">{{ ur.status }}</td>
+                            <td class="align-middle"><a href="{% url 'ps_core:update_request_detail' pk=ur.id %}" class="btn btn-primary">着手</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
+
+{% endblock content %}

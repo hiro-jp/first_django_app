@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Logout{% endblock %}
+
+{% block content %}
+
+<div class="row">
+<div class="col-md-6 offset-md-3">
+    <div class="card my-3">
+        <div class="card-header text-center">
+            <img class="mx-auto d-block" src="{% static 'ps_core/ps_logo_opaque.png' %}">
+            <h4>Profiling sheet profiles you.</h4>
+        </div>
+        <div class="card-body">
+            <p>You are logged out. Thank you!<p>
+            <hr>
+            <a href="{% url 'login' %}" class="btn btn-success btn-lg btn-block">Login again</a>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}

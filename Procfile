@@ -1,0 +1,1 @@
+web: gunicorn profile_sheet.wsgi --log-file -

@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% load ps_extras %}
+
+{% block title %}Summary{% endblock title %}
+
+<script>
+{% block jquery %}
+
+$.ajax({
+    method: "GET",
+    url: '/skill_master/chart/api2/',
+    success: function(data2){
+        console.log(data2);
+        subDivTest2(data2)
+    },
+    error: function(error_data){
+        console.log("error");
+        console.log(error_data);
+    }
+});
+
+function subDivTest2(subs) {
+    $("#canvases").append("<div class='col-sm-12' id='" + subId(subs.id) + "'></div>");
+    subDivRec(subs.subs, subs.id);
+}
+
+function subDivRec(subs, prevId) {
+    for(let i = 0; i < subs.length; i++) {
+        $(subId(prevId, "#")).append("<div class='col-sm-12'><div class='row' id='" + subId(subs[i].id) + "'></div></div>");
+        subDivRec(subs[i].subs, subs[i].id);
+        for(let j = 0; j < subs[i].member.length; j++) {
+            $(subId(subs[i].id, "#")).append("<div class='col-lg-4 col-sm-6 col-xs-12'><div class='card m-1 p-0' id='" + memberId(subs[i].member[j].id) + "'></div></div>");
+            $(memberId(subs[i].member[j].id, "#")).append("<div class='card-header'><h5 class='card-title mb-0'>" + subs[i].member[j].name + "（" + subs[i].member[j].yoe +"年次）" + "</h5></div>");
+            skillGroupRec(subs[i].member[j].skill_group, memberId(subs[i].member[j].id), subs[i].member[j].id);
+        }
+    }
+}
+
+function skillGroupRec(skill_group_set, id, memberNo) {
+    for(let i = 0; i < skill_group_set.length; i++) {
+        $("#" + id).append("<div class='col-sm-12' id='" + skillGroupId(memberNo, skill_group_set[i].id) + "'></div>");
+        $(skillGroupId(memberNo, skill_group_set[i].id, "#")).append("<h6>" + skill_group_set[i].name + "</h6>");
+        skillGroupRec(skill_group_set[i].skill_group, skillGroupId(memberNo, skill_group_set[i].id), memberNo);
+        skillChart(skill_group_set[i].skill, skillGroupId(memberNo, skill_group_set[i].id));
+    }
+}
+
+function skillChart(skill_set, id) {
+    if(skill_set.length != 0) {
+        $("#" + id).append("<canvas width='400' height='400'  id='" + canvasId(id) + "'></canvas>");
+        drawChart(canvasId(id), skill_set.label, skill_set.user_data, skill_set.ref_data);
+    }
+}
+
+function subId(id=0, selector="") {
+    return (selector + "sub_" + id);
+}
+
+function memberId(id=0, selector="") {
+    return (selector + "member_" + id);
+}
+
+function skillGroupId(member_id=0, skill_group_id=0, selector="") {
+    return (selector + "member_" + member_id + "_skill_group_" + skill_group_id);
+}
+
+{# skillGroupId を受け取るという点で他と異なる #}
+function canvasId(skill_group_id=0, selector="") {
+    return (selector + skill_group_id + "_canvas")
+}
+
+let userBorderColor = [
+    'rgba(54, 162, 235, 1)',
+];
+
+let userBackgroundColor = [
+    'rgba(54, 162, 235, 0.2)',
+];
+
+let refBorderColor = [
+    'rgba(255, 99, 132, 1)'
+];
+
+let refBackgroundColor = [
+    'rgba(255, 99, 132, 0.2)'
+];
+
+function drawChart(canvasId, labels, user_data, ref_data) {
+    var ctx = document.getElementById(canvasId).getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "本人レベル",
+                data: user_data,
+                backgroundColor: userBackgroundColor,
+                borderColor: userBorderColor,
+                borderWidth: 2
+            }, {
+                label: "年次目安",
+                data: ref_data,
+                backgroundColor: refBackgroundColor,
+                borderColor: refBorderColor,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scale: {
+                ticks: {
+                    beginAtZero: true,
+                    min: 0,
+                    max: 5,
+                    stepSize: 1
+                }
+            }
+        }
+    });
+}
+
+{% endblock %}
+</script>
+
+{% block content %}
+
+    <h4 id="title_call">Skill Master Summary</h4>
+    <div class="row" id="canvases"></div>
+
+{% endblock content %}
